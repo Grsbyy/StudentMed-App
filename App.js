@@ -16,6 +16,7 @@ const Announcement = () => {
   );
 };
 
+
 // Illnesses Component
 const Illnesses = ({ onSelectIllness }) => {
   const [searchText, setSearchText] = useState('');
