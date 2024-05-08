@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "539979970488",
+    "project_id": "studentmed-d554c",
+    "storage_bucket": "studentmed-d554c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:539979970488:android:020918cae35e068759014d",
+        "android_client_info": {
+          "package_name": "com.doppie.studentmed"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "539979970488-oaimua8od0km3urfrroe00hnpepntk2v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyhc8WHn7cKoKwkqKSeeeFFQwgKACS1JE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "539979970488-oaimua8od0km3urfrroe00hnpepntk2v.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "539979970488-ggfej04diva2kvktuddo5454c1932egp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.doppie.studentmed"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

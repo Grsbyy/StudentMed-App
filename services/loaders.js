@@ -10,6 +10,8 @@ export async function loadNewsFromWeb(goodCallback, badCallback) {
         })
         .then((data) => {
             goodCallback(JSON.parse(data));
+        }).catch((err) => {
+            badCallback();            
         });
 }
 
@@ -25,5 +27,7 @@ export async function loadHospitalsFromWeb(goodCallback, badCallback) {
         })
         .then((data) => {
             goodCallback(JSON.parse(data));
+        }).catch((err) => {
+            badCallback();
         });
 }
