@@ -4,8 +4,15 @@ import { StyleSheet, Text, View, ScrollView, TextInput, Image } from 'react-nati
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native'
 
+import {
+    GoogleSignin,
+    GoogleSigninButton,
+    statusCodes,
+} from '@react-native-google-signin/google-signin';
+
 import AnnouncementPage from './pages/announcements';
 import KnowledgeBasePage from './pages/knowledgebase';
+import SettingsPage from './pages/settings';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -31,14 +38,18 @@ const ToolsScreen = () => {
 
 const SettingsScreen = () => {
     return(
-        <View>
-            <Text>This is the SettingsScreen!</Text>
-        </View>
+        <SettingsPage/>
     );
 };
 
 const Tab = createBottomTabNavigator();
 const MainApp = () => {
+    // useEffect(()=>{
+    //     GoogleSignin.configure({
+    //         webClientId: '539979970488-oaimua8od0km3urfrroe00hnpepntk2v.apps.googleusercontent.com',
+    //     })
+    // },[]);
+
     return(
         <NavigationContainer>
             <Tab.Navigator
@@ -75,7 +86,7 @@ const MainApp = () => {
                 <Tab.Screen options={{headerShown:false}} name="Announcements" component={AnnouncementsScreen}/>
                 <Tab.Screen options={{headerShown:false}} name="KB" component={KnowledgeBaseScreen}/>
                 <Tab.Screen name="Services" component={ToolsScreen}/>
-                <Tab.Screen name="Settings" component={SettingsScreen}/>
+                <Tab.Screen options={{headerShown:false}} name="Settings" component={SettingsScreen}/>
             </Tab.Navigator>
         </NavigationContainer>                
     );

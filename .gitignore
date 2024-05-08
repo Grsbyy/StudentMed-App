@@ -39,3 +39,4 @@ yarn-error.*
 
 #miscFiles
 local/
+sample_tests/

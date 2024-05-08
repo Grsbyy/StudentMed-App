@@ -1,11 +1,13 @@
 import React, { useEffect, useReducer, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TextInput, Image, Alert } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TextInput, Image, Alert, Button } from 'react-native';
 
 import { TouchableHighlight, TouchableOpacity, ImageBackground } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { NewsObject } from '../classes/newsobject.js';
-import { loadNewsFromJSON } from '../services/newsloader.js';
+import { loadNewsFromWeb } from '../services/loaders.js';
+
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 let newsObjects = {};
 
@@ -13,36 +15,80 @@ const Stack = createStackNavigator();
 const AnnouncementPage = () => {
     const [selectedArticle, setSelectedArticle] = useState(0);
     const [isNewsReady, setNewsLoaded] = useState(false);    
-    
-    loadNewsFromJSON(
+    const [isNewsFetchFail, setNewsFetchFail] = useState(false);
+    const [, tryAgain] = useReducer(x => x + 1, 0);
+
+    loadNewsFromWeb(
         function(data) {
             for(var i = 0; i < data.length; i++) {
                 newsObjects[i] = data[i];                
             }
             
-            setNewsLoaded(true);
-            //updateAndRerender();
+            setNewsLoaded(true);            
+        },
+
+        function() {
+            setNewsFetchFail(true);
         }
     );    
 
-    if(isNewsReady) {
-        return(        
-            <Stack.Navigator>
-                <Stack.Screen name="Announcements and News">
-                    {props => <CardsDisplay {...props} setArticleFunc={setSelectedArticle} articles={newsObjects}/>}
-                </Stack.Screen>
-                <Stack.Screen name="Reading">
-                    {props => <ArticleViewSubpage article={newsObjects[selectedArticle]}/>}
-                </Stack.Screen>
-            </Stack.Navigator>                  
-        );
-    } else {
+    if(isNewsFetchFail) {
         return(
-            <View style={{justifyContent: 'center', height: '100%'}}>
+            <View style={{justifyContent: 'center', alignItems: 'center', height: '100%'}}>
+                <Ionicons name='cloud-offline' size={100} color='gray'/>
                 <Text style={{
                     textAlign: 'center',
                     fontWeight: 'bold',
-                    fontSize: 25
+                    fontSize: 15
+                }}>
+                    We couldn't fetch your newsfeed, sorry about that!
+                </Text>
+                
+                <Button
+                title="Retry"
+                onPress={
+                    function() {
+                        tryAgain();
+                    }
+                }
+                />
+            </View>
+        );
+    } else if(isNewsReady && !isNewsFetchFail) {
+        if(newsObjects.length == 0) {
+            return(
+                <View style={{justifyContent: 'center', alignItems: 'center', height: '100%'}}>
+                    <Ionicons name='partly-sunny' size={100} color='gray'/>
+                    <Text style={{
+                        textAlign: 'center',
+                        fontWeight: 'bold',
+                        fontSize: 15
+                    }}>
+                        There seems to be no published news online...
+                    </Text>
+                </View>
+            );
+            
+        } else {
+            return(        
+                <Stack.Navigator>
+                    <Stack.Screen name="Announcements and News">
+                        {props => <CardsDisplay {...props} setArticleFunc={setSelectedArticle} articles={newsObjects}/>}
+                    </Stack.Screen>
+                    <Stack.Screen name="Reading">
+                        {props => <ArticleViewSubpage article={newsObjects[selectedArticle]}/>}
+                    </Stack.Screen>
+                </Stack.Navigator>                  
+            );
+        }        
+    } else {
+        return(
+            <View style={{justifyContent: 'center', alignItems: 'center', height: '100%'}}>
+                <Ionicons name='hourglass-outline' size={100} color='gray'/>
+                <Text style={{
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    fontSize: 15
                 }}>
                     Loading News...
                 </Text>
