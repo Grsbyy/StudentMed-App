@@ -1,12 +1,15 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TextInput, Image, Alert } from 'react-native';
+import FailScreen from './misc/fail_screen.js';
+import LoadingScreen from './misc/loading_screen.js';
+
 import { TouchableHighlight, TouchableOpacity, ImageBackground } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import { HospitalObject } from '../classes/hospitalobject';
-import { loadHospitalsFromWeb } from '../services/loaders.js'
+import { collection, getDoc, getDocs } from 'firebase/firestore';
+import firestore from '../services/firebase.js';
 
 let listHospitals = {};
 
@@ -15,93 +18,51 @@ const HospitalsView = () => {
     const [selectedHospital, setSelectedHospital] = useState(0);
     const [isDataReady, setDataLoaded] = useState(false);
     const [isDataFetchFailed, setFetchFailed] = useState(false);
+    const [hospitalData, setHospitalData] = useState([]);    
     const [, tryAgain] = useReducer(x => x + 1, 0);
 
-    loadHospitalsFromWeb(
-        function(data) {
-            for(var i = 0; i < data.length; i++) {
-                listHospitals[i] = data[i];
-            }
+    const fetchHospitals = async () => {
+        try {
+            await getDocs(collection(firestore, 'kb/HOSPITALS/hospitals'))
+            .then((qSnap) => {
+                const data = qSnap.docs.map((doc) => ({
+                    ...doc.data(), id: doc.id
+                }));
 
-            setDataLoaded(true);
-        },
-
-        function() {
+                setHospitalData(data);
+                setDataLoaded(true);
+            });
+        } catch(err) {
             setFetchFailed(true);
+            console.error(err);
         }
-    )
+    };
+    useEffect(()=>{
+        fetchHospitals();
+    }, []);
 
-    if(isDataFetchFailed) {
-        return(
-            <View style={{justifyContent: 'center', alignItems: 'center', height: '100%'}}>
-                <Ionicons name='cloud-offline' size={100} color='gray'/>
-                <Text style={{
-                    textAlign: 'center',
-                    fontWeight: 'bold',
-                    fontSize: 15
-                }}>
-                    There was an error, sorry about that!
-                </Text>
-                
-                <Button
-                title="Retry"
-                onPress={
-                    function() {
-                        tryAgain();
-                    }
-                }
-                />
-            </View>
-        );
-    } else if(isDataReady && !isDataFetchFailed) {
-        if(listHospitals.length == 0) {
-            return(
-                <View style={{justifyContent: 'center', alignItems: 'center', height: '100%'}}>
-                    <Ionicons name='partly-sunny' size={100} color='gray'/>
-                    <Text style={{
-                        textAlign: 'center',
-                        fontWeight: 'bold',
-                        fontSize: 15
-                    }}>
-                        No hospitals here...
-                    </Text>
-
-                    <Button
-                    title="Retry"
-                    onPress={
-                        function() {
-                            tryAgain();
-                        }
-                    }
-                    />
-                </View>
-            );
-        } else {
-            return(
-                <Stack.Navigator>
-                    <Stack.Screen name="Hospitals">
-                        {props => <ListHospitalsDisplay {...props} setHospitalFunc={setSelectedHospital} hospitals={listHospitals}/>}
-                    </Stack.Screen>
-                    <Stack.Screen name="Viewing">
-                        {props => <DetailedHospitalPage {...props} hospital={listHospitals[selectedHospital]}/>}
-                    </Stack.Screen>
-                </Stack.Navigator>                
-            );            
-        }
-    } else if (!isDataReady) {
-        return(
-            <View style={{justifyContent: 'center', alignItems: 'center', height: '100%'}}>
-                <Ionicons name='hourglass-outline' size={100} color='gray'/>
-                <Text style={{
-                    textAlign: 'center',
-                    fontWeight: 'bold',
-                    fontSize: 15
-                }}>
-                    Loading...
-                </Text>
-            </View>
+    if (isDataFetchFailed) {
+        return (
+            <FailScreen text={"Failed to load hospitals, please check your internet connection..."}/>
         );
     }
+
+    if(isDataReady) {
+        return(
+            <Stack.Navigator>
+                <Stack.Screen name="Hospitals Directory">
+                    {props => <ListHospitalsDisplay {...props} setHospitalFunc={setSelectedHospital} hospitals={hospitalData}/>}
+                </Stack.Screen>
+                <Stack.Screen name="Viewing">
+                    {props => <DetailedHospitalPage {...props} hospital={hospitalData[selectedHospital]}/>}
+                </Stack.Screen>
+            </Stack.Navigator>                
+        );  
+    } else {
+        return(
+            <LoadingScreen text="Loading hospitals..."/>
+        );
+    }    
 };
 export default HospitalsView;
 
@@ -110,30 +71,25 @@ const ListHospitalsDisplay = (props) => {
     const [, refresh] = useReducer(x => x + 1, 0)
 
     let cards = [];
-    let searchHosps = function() {
-        let newArr = [];
-        for(const [k,v] of Object.entries(props.hospitals)) {
-            if(searchText.length > 0 && !v.name.toLowerCase().includes(searchText.toLowerCase())) {
-                continue;
-            }
-
-            newArr.push(
+    let i = 0;
+    props.hospitals.forEach(hosp => {
+        if(searchText.length == 0 || hosp.name.toLowerCase().includes(searchText.toLowerCase())) {
+            cards.push(
                 <HospitalButton
-                icon = {v.icon}
-                hospitalName = {v.name}
-                location = {v.location}
-                distance = {v.distance}
-                key = {String(k)}
-                id={k}
+                icon = {hosp.icon}
+                hospitalName = {hosp.name}
+                location = {hosp.address}
+                distance = {hosp.distance}
+                key = {hosp.id}
+                id={i}
     
                 nav = {props.navigation}
                 setHospitalFunc = {props.setHospitalFunc}
                 />
             );
-        }
-        return newArr;
-    }    
-    cards = searchHosps();
+            i++;
+        }            
+    });     
 
     return(
         <View
@@ -276,7 +232,8 @@ const DetailedHospitalPage = (props) => {
             style={{width: '90%', height: undefined, aspectRatio: 1.75, borderRadius: 15}}/>
 
             <Text style={style.body}>Available hours: {props.hospital.hours}</Text>
-            <Text style={style.body}>Services offered: {props.hospital.services.toString()}</Text>
+            <Text style={style.body}>Contacts: {props.hospital.contact}</Text>
+            <Text style={style.body}>Services offered:{props.hospital.services.map((x) => { return " " + x; }).toString()}</Text>
         </ScrollView>       
     );
 };

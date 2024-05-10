@@ -21,6 +21,7 @@ import { StatusBar } from 'react-native';
 const Tab = createBottomTabNavigator();
 const MainApp = () => {
     const [loginData, setLoginData] = useState(null);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(()=>{
         GoogleSignin.configure({
@@ -73,10 +74,10 @@ const MainApp = () => {
                         () => <KnowledgeBasePage/>
                     }/>
                     <Tab.Screen options={{headerShown:false}} name="Services" children={
-                        () => <ServicesPage userData={loginData}/>                    
+                        () => <ServicesPage userData={loginData} isAdmin={isAdmin}/>                    
                     }/>
                     <Tab.Screen options={{headerShown:false}} name="Settings" children={
-                        ()=> <SettingsPage loginCallback={setLoginData} userData={loginData}/>
+                        ()=> <SettingsPage loginCallback={setLoginData} adminCallback={setIsAdmin} userData={loginData}/>
                     }/>
                 </Tab.Navigator>
             </NavigationContainer> 

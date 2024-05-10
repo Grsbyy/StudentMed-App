@@ -6,20 +6,33 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
+import auth from '@react-native-firebase/auth';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import firestore from '../services/firebase';
+
+import '../global';
 
 const Stack = createStackNavigator();
 const SettingsPage = (props) => {
     return(
         <Stack.Navigator>
             <Stack.Screen name="Settings and Accounts">
-                {() => <SettingsIndex loginCallback={props.loginCallback} userData={props.userData}/>}
+                {() => <SettingsIndex loginCallback={props.loginCallback} adminCallback={props.adminCallback} userData={props.userData}/>}
             </Stack.Screen>
         </Stack.Navigator>
     )
 };
 export default SettingsPage;
 
-const SettingsIndex = (props) => {
+const SettingsIndex = (props) => {    
+    return(
+        <ScrollView style={{height: '100%'}}>
+            <ProfileManager {...props} loginCallback={props.loginCallback} adminCallback={props.adminCallback} userData={props.userData}/>
+        </ScrollView>
+    );
+}
+
+const ProfileManager = (props) => {
     const [isLoggedIn, setLoggedIn] = useState(false); 
     const [, refresh] = useReducer(x => x + 1, 0);
 
@@ -80,13 +93,31 @@ const SettingsIndex = (props) => {
         }
     });
     
-    async function googleLogin(cb) {
+    async function googleLogin(cb, cb2) {
         try {
             await GoogleSignin.hasPlayServices();
-            const userInfo = await GoogleSignin.signIn();
+            const userInfo = await GoogleSignin.signIn();            
+
+            const credential = auth.GoogleAuthProvider.credential(
+                userInfo.idToken
+            );
+            await auth().signInWithCredential(credential)            
 
             cb(userInfo);
             setLoggedIn(true);
+
+            console.log("Logged in for ID: " + userInfo.user.id);
+            console.log("Will now check if admin...");
+
+            getDocs(query(
+                collection(firestore, 'admins'),
+                where('uid', '==', userInfo.user.id)
+            )).then(qSnap => {
+                qSnap.forEach(dSnap => {                    
+                    cb2(true);
+                    console.log("isAdmin");
+                })
+            });                        
         } catch(error) {
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
                 // user cancelled the login flow
@@ -105,13 +136,15 @@ const SettingsIndex = (props) => {
         }
     };
 
-    async function googleSignout(cb) {
+    async function googleSignout(cb, cb2) {
         try {
-            const userInfo = await GoogleSignin.signOut();            
+            await GoogleSignin.revokeAccess();
+            await GoogleSignin.signOut();            
 
             setLoggedIn(false);
-            cb(userInfo);            
-            refresh();
+            cb(null);
+            cb2(false);            
+            refresh();                
         } catch(error) {            
             Alert.alert('Failed to logout', error.toString() + " Stack: " + error.stack);
         }
@@ -136,8 +169,9 @@ const SettingsIndex = (props) => {
                         <Button
                         title="Sign out"
                         onPress={
-                            () => googleSignout(props.loginCallback)
-                        }/>
+                            () => googleSignout(props.loginCallback,  props.adminCallback)
+                        }
+                        color={'#ff6347'}/>
                     </View>
                 </View>                
             </ImageBackground> 
@@ -152,7 +186,7 @@ const SettingsIndex = (props) => {
                 size={GoogleSigninButton.Size.Wide}
                 color={GoogleSigninButton.Color.Light}
                 onPress={
-                    () => googleLogin(props.loginCallback)
+                    () => googleLogin(props.loginCallback, props.adminCallback)
                 }
                 disabled={isLoggedIn}
                 />
@@ -161,10 +195,6 @@ const SettingsIndex = (props) => {
     };    
 
     return(
-        <ScrollView style={{height: '100%'}}>
-        { 
-            isLoggedIn ? <ProfileSection_loggedIn {...props} /> : <ProfileSection_loggedOut {...props}/>
-        }                                
-        </ScrollView>
+        isLoggedIn ? <ProfileSection_loggedIn {...props} /> : <ProfileSection_loggedOut {...props}/>
     )
 }

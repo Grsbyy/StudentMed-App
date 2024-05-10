@@ -5,12 +5,21 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
+import OCIMain from './svc_ocipage';
+import OCIAdmin from './svc_ociadmin';
+
 const Stack = createStackNavigator();
-const ServicesPage = () => {
+const ServicesPage = (props) => {
     return(
         <Stack.Navigator>
             <Stack.Screen name = "Tools and Services">
-                {props => <SVCHome {...props}/>}
+                { props2 => <SVCHome {...props2} userData={props.userData} isAdmin={props.isAdmin}/>}
+            </Stack.Screen>
+            <Stack.Screen options={{headerShown:false}} name="Online Clinic System">
+                { props2 => <OCIMain {...props2} userData={props.userData}/>}
+            </Stack.Screen>
+            <Stack.Screen options={{headerShown:false}} name="OCS Admin">
+                { props2 => <OCIAdmin {...props2} userData={props.userData} isAdmin={props.isAdmin}/>}
             </Stack.Screen>
         </Stack.Navigator>
     );
@@ -18,6 +27,15 @@ const ServicesPage = () => {
 export default ServicesPage;
 
 const SVCHome = (props) => {
+    var adminButton = props.isAdmin ? 
+        <SVCButton
+            imgSrc='https://t3.ftcdn.net/jpg/02/26/35/20/360_F_226352071_wOWtMmihfuqF0DVSGTZede0oKas4qxvc.jpg'
+            ioniconIcon='construct-outline'
+            title='OCS Admin'
+            nav={props.navigation}
+            dest='OCS Admin'
+        /> : null;
+
     return(
         <ScrollView style={{
             height: '100%'
@@ -33,11 +51,21 @@ const SVCHome = (props) => {
 
             <SVCButton
             imgSrc='https://shoplineimg.com/5e757ddc77cb07002a43f688/5faa0acf1b58238e1bc9f2d7/800x.jpg?'
-            ioniconIcon='calculator-outline'
+            ioniconIcon='scale-outline'
             title='BMI Calculator'
             nav = {props.navigation}
             dest=''
             />
+
+            <SVCButton
+            imgSrc='https://t3.ftcdn.net/jpg/02/26/35/20/360_F_226352071_wOWtMmihfuqF0DVSGTZede0oKas4qxvc.jpg'
+            ioniconIcon='storefront-outline'
+            title='Online Clinic System'
+            nav = {props.navigation}
+            dest='Online Clinic System'
+            />
+
+            {adminButton}
         </ScrollView>
     );
 };
@@ -67,7 +95,7 @@ const SVCButton = (props) => {
     });
 
     function onClicked() {
-        //props.nav.navigate(props.dest);        
+        props.nav.navigate(props.dest);        
     }
 
     return(
