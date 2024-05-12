@@ -7,7 +7,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import firestore from '../services/firebase';
 
 import '../global';
@@ -98,6 +98,12 @@ const ProfileManager = (props) => {
             await GoogleSignin.hasPlayServices();
             const userInfo = await GoogleSignin.signIn();            
 
+            userInfo.displayName =
+                userInfo.user.familyName != null ?
+                userInfo.user.givenName + " " + userInfo.user.familyName
+                :
+                userInfo.user.givenName;
+
             const credential = auth.GoogleAuthProvider.credential(
                 userInfo.idToken
             );
@@ -110,14 +116,25 @@ const ProfileManager = (props) => {
             console.log("Will now check if admin...");
 
             getDocs(query(
-                collection(firestore, 'admins'),
+                collection(firestore, 'users'),
                 where('uid', '==', userInfo.user.id)
             )).then(qSnap => {
-                qSnap.forEach(dSnap => {                    
-                    cb2(true);
-                    console.log("isAdmin");
-                })
-            });                        
+                qSnap.forEach(dSnap=> {
+                    if(dSnap.data().isAdmin) {
+                        cb2(true);
+                        console.log("isAdmin");
+                    }
+                });
+            });
+
+            setDoc(
+                doc(firestore, 'users', userInfo.user.id), {
+                    display_name: userInfo.displayName,
+                    email: userInfo.user.email,
+                    uid: userInfo.user.id
+                }, {merge: true}
+            );
+            
         } catch(error) {
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
                 // user cancelled the login flow
@@ -130,9 +147,7 @@ const ProfileManager = (props) => {
               }
 
             setLoggedIn(false);
-            if(error.code !== statusCodes.SIGN_IN_CANCELLED) {
-                Alert.alert('Failed to login', error.toString() + " Stack: " + error.stack);
-            }            
+            Alert.alert('Failed to login', error.toString() + " Stack: " + error.stack);         
         }
     };
 
