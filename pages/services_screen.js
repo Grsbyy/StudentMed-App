@@ -8,6 +8,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import OCIMain from './services_oci/svc_ocipage';
 import OCIAdmin from './services_oci/svc_ociadmin';
 import MenstrualCalc from './svc_menscalc';
+import BMICalc from './svc_bmicalc';
 
 const Stack = createStackNavigator();
 const ServicesPage = (props) => {
@@ -24,6 +25,9 @@ const ServicesPage = (props) => {
             </Stack.Screen>
             <Stack.Screen name="Menstrual Cycle Calculator">
                 { props2 => <MenstrualCalc {...props2}/>}
+            </Stack.Screen>
+            <Stack.Screen name="BMI Calculator">
+                { props2 => <BMICalc {...props2}/>}
             </Stack.Screen>
         </Stack.Navigator>
     );
@@ -42,7 +46,7 @@ const SVCHome = (props) => {
         <ScrollView style={{
             height: '100%'
         }}>
-            {true ? 
+            {props.isAdmin ? 
                 <View>
                     <Text style={styles.sectionText}>Admin-Only</Text>
                     <SVCButton
@@ -109,7 +113,7 @@ const SVCHome = (props) => {
                     ioniconIcon='scale-outline'
                     title='BMI Calculator'
                     nav={props.navigation}
-                    dest=''
+                    dest='BMI Calculator'
                 />
             </View>
         </ScrollView>
