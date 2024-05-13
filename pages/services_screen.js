@@ -5,8 +5,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import OCIMain from './svc_ocipage';
-import OCIAdmin from './svc_ociadmin';
+import OCIMain from './services_oci/svc_ocipage';
+import OCIAdmin from './services_oci/svc_ociadmin';
+import MenstrualCalc from './svc_menscalc';
 
 const Stack = createStackNavigator();
 const ServicesPage = (props) => {
@@ -21,51 +22,96 @@ const ServicesPage = (props) => {
             <Stack.Screen options={{headerShown:false}} name="OCS Admin">
                 { props2 => <OCIAdmin {...props2} userData={props.userData} isAdmin={props.isAdmin}/>}
             </Stack.Screen>
+            <Stack.Screen name="Menstrual Cycle Calculator">
+                { props2 => <MenstrualCalc {...props2}/>}
+            </Stack.Screen>
         </Stack.Navigator>
     );
 };
 export default ServicesPage;
 
 const SVCHome = (props) => {
-    var adminButton = props.isAdmin ? 
-        <SVCButton
-            imgSrc='https://t3.ftcdn.net/jpg/02/26/35/20/360_F_226352071_wOWtMmihfuqF0DVSGTZede0oKas4qxvc.jpg'
-            ioniconIcon='construct-outline'
-            title='OCS Admin'
-            nav={props.navigation}
-            dest='OCS Admin'
-        /> : null;
+    const styles = StyleSheet.create({
+        sectionText: {
+            fontWeight: 'bold',
+            margin: 10
+        }
+    });
 
     return(
         <ScrollView style={{
             height: '100%'
         }}>
+            {true ? 
+                <View>
+                    <Text style={styles.sectionText}>Admin-Only</Text>
+                    <SVCButton
+                        imgSrc='https://t3.ftcdn.net/jpg/02/26/35/20/360_F_226352071_wOWtMmihfuqF0DVSGTZede0oKas4qxvc.jpg'
+                        ioniconIcon='construct-outline'
+                        title='OCS Admin'
+                        nav={props.navigation}
+                        dest='OCS Admin'
+                    />
+                    <SVCButton
+                        imgSrc='https://t3.ftcdn.net/jpg/02/26/35/20/360_F_226352071_wOWtMmihfuqF0DVSGTZede0oKas4qxvc.jpg'
+                        ioniconIcon='construct-outline'
+                        title='LF Admin Control'
+                        nav={props.navigation}
+                        dest='LF Admin'
+                    />
+                    <SVCButton
+                        imgSrc='https://t3.ftcdn.net/jpg/02/26/35/20/360_F_226352071_wOWtMmihfuqF0DVSGTZede0oKas4qxvc.jpg'
+                        ioniconIcon='construct-outline'
+                        title='Article Writer'
+                        nav={props.navigation}
+                        dest='Article Writer'
+                    />
+                    <SVCButton
+                        imgSrc='https://t3.ftcdn.net/jpg/02/26/35/20/360_F_226352071_wOWtMmihfuqF0DVSGTZede0oKas4qxvc.jpg'
+                        ioniconIcon='construct-outline'
+                        title='KB Manager'
+                        nav={props.navigation}
+                        dest='KB Manager'
+                    />
+                </View>                
+            : null}
 
-            <SVCButton
-            imgSrc='https://previews.123rf.com/images/gena96/gena961210/gena96121000023/15993765-close-up-a-calendar-page.jpg'
-            ioniconIcon='calendar-number-outline'
-            title='Menstrual Calculator'
-            nav = {props.navigation}
-            dest=''
-            />
+            <View>
+                <Text style={styles.sectionText}>Online Clinic System</Text>
+                <SVCButton
+                    imgSrc='https://t3.ftcdn.net/jpg/02/26/35/20/360_F_226352071_wOWtMmihfuqF0DVSGTZede0oKas4qxvc.jpg'
+                    ioniconIcon='storefront-outline'
+                    title='Online Clinic System'
+                    nav={props.navigation}
+                    dest='Online Clinic System'
+                />
+                <SVCButton
+                    imgSrc='https://t3.ftcdn.net/jpg/02/26/35/20/360_F_226352071_wOWtMmihfuqF0DVSGTZede0oKas4qxvc.jpg'
+                    ioniconIcon='storefront-outline'
+                    title='Lost and Found Items'
+                    nav={props.navigation}
+                    dest='Lost and Found Items'
+                />
+            </View>            
 
-            <SVCButton
-            imgSrc='https://shoplineimg.com/5e757ddc77cb07002a43f688/5faa0acf1b58238e1bc9f2d7/800x.jpg?'
-            ioniconIcon='scale-outline'
-            title='BMI Calculator'
-            nav = {props.navigation}
-            dest=''
-            />
+            <View>
+                <Text style={styles.sectionText}>Personalized Apps</Text>
+                <SVCButton
+                    imgSrc='https://previews.123rf.com/images/gena96/gena961210/gena96121000023/15993765-close-up-a-calendar-page.jpg'
+                    ioniconIcon='calendar-number-outline'
+                    title='Menstrual Calculator'
+                    nav={props.navigation}
+                    dest='Menstrual Cycle Calculator'
+                />
 
-            <SVCButton
-            imgSrc='https://t3.ftcdn.net/jpg/02/26/35/20/360_F_226352071_wOWtMmihfuqF0DVSGTZede0oKas4qxvc.jpg'
-            ioniconIcon='storefront-outline'
-            title='Online Clinic System'
-            nav = {props.navigation}
-            dest='Online Clinic System'
-            />
-
-            {adminButton}
+                <SVCButton
+                    imgSrc='https://shoplineimg.com/5e757ddc77cb07002a43f688/5faa0acf1b58238e1bc9f2d7/800x.jpg?'
+                    ioniconIcon='scale-outline'
+                    title='BMI Calculator'
+                    nav={props.navigation}
+                    dest=''
+                />
+            </View>
         </ScrollView>
     );
 };

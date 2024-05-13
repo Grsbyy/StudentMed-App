@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TextInput, Image, Alert, Button, Switch } from 'react-native';
-import FailScreen from './misc/fail_screen';
-import LoadingScreen from './misc/loading_screen';
+import FailScreen from '../misc/fail_screen';
+import LoadingScreen from '../misc/loading_screen';
 
 import { TouchableHighlight, TouchableOpacity, ImageBackground } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -9,9 +9,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { Timestamp, addDoc, collection, doc, getDoc, getDocs, getFirestore, limitToLast, onSnapshot, query, refEqual, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore';
-import firestore from '../services/firebase';
+import firestore from '../../services/firebase';
 import { Dropdown } from 'react-native-element-dropdown';
-import TicketViewer from './misc/ticketviewer';
+import TicketViewer from '../misc/ticketviewer';
 
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { RNCamera } from 'react-native-camera';

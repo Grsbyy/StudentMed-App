@@ -1,8 +1,8 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TextInput, Image, Alert, Button } from 'react-native';
-import FailScreen from './misc/fail_screen';
-import LoadingScreen from './misc/loading_screen';
-import TicketViewer from './misc/ticketviewer';
+import FailScreen from '../misc/fail_screen';
+import LoadingScreen from '../misc/loading_screen';
+import TicketViewer from '../misc/ticketviewer';
 
 import { TouchableHighlight, TouchableOpacity, ImageBackground } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -10,49 +10,48 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { Timestamp, addDoc, collection, doc, getDoc, getDocs, getFirestore, limitToLast, onSnapshot, query, refEqual, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore';
-import firestore from '../services/firebase';
+import firestore from '../../services/firebase';
 import { Dropdown } from 'react-native-element-dropdown';
-import QRCode from 'react-native-qrcode-svg';
 
 const Stack = createStackNavigator();
 const OCIMain = (props) => {
     const [ticketData, setTicketData] = useState([]);
     const [selectedTicket, setSelectedTicket] = useState(0);
 
-        return (
-            <Stack.Navigator>
-                <Stack.Screen name="OCS Tickets Menu">
-                    {props2 => props.userData != null ?
-                        <OCIHome
-                            {...props2}
-                            userData={props.userData}
-                            cb_setTicketData={setTicketData}
-                            cb_selectTicket={setSelectedTicket}
-                            ticketData={ticketData}/>
-                        :
-                        <View style={{ justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                            <Ionicons name='person-add-outline' size={100} color='gray' />
-                            <Text style={{
-                                textAlign: 'center',
-                                fontWeight: 'bold',
-                                fontSize: 15
-                            }}>
-                                You have to be logged in with your ZRC account to access the Online Clinic System!
-                            </Text>
-                            <Text>
-                                Go to the settings page to log in
-                            </Text>
-                        </View>
-                    }
-                </Stack.Screen>
-                <Stack.Screen name="Viewing Ticket">
-                    {props2 => <TicketViewer {...props2} userData={props.userData} ticketData={ticketData[selectedTicket]} />}
-                </Stack.Screen>
-                <Stack.Screen name="Ticket Request Form">
-                    {props2 => <FileTicketForm {...props2} userData={props.userData}/>}
-                </Stack.Screen>
-            </Stack.Navigator>
-        );   
+    return (
+        <Stack.Navigator>
+            <Stack.Screen name="OCS Tickets Menu">
+                {props2 => props.userData != null ?
+                    <OCIHome
+                        {...props2}
+                        userData={props.userData}
+                        cb_setTicketData={setTicketData}
+                        cb_selectTicket={setSelectedTicket}
+                        ticketData={ticketData} />
+                    :
+                    <View style={{ justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                        <Ionicons name='person-add-outline' size={100} color='gray' />
+                        <Text style={{
+                            textAlign: 'center',
+                            fontWeight: 'bold',
+                            fontSize: 15
+                        }}>
+                            You have to be logged in with your ZRC account to access the Online Clinic System!
+                        </Text>
+                        <Text>
+                            Go to the settings page to log in
+                        </Text>
+                    </View>
+                }
+            </Stack.Screen>
+            <Stack.Screen name="Viewing Ticket">
+                {props2 => <TicketViewer {...props2} userData={props.userData} ticketData={ticketData[selectedTicket]} />}
+            </Stack.Screen>
+            <Stack.Screen name="Ticket Request Form">
+                {props2 => <FileTicketForm {...props2} userData={props.userData} />}
+            </Stack.Screen>
+        </Stack.Navigator>
+    );
 };
 export default OCIMain;
 
