@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TextInput, Image, Alert } from 'react-native';
-import FailScreen from './misc/fail_screen.js';
-import LoadingScreen from './misc/loading_screen.js';
+import FailScreen from '../misc/fail_screen.js';
+import LoadingScreen from '../misc/loading_screen.js';
 
 import { TouchableHighlight, TouchableOpacity, ImageBackground } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -9,7 +9,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { collection, getDoc, getDocs } from 'firebase/firestore';
-import firestore from '../services/firebase.js';
+import {firestore} from '../../services/firebase.js';
 
 let listHospitals = {};
 
@@ -107,9 +107,7 @@ const ListHospitalsDisplay = (props) => {
             placeholder='Search a hospital'
             value={searchText}
             onChangeText={text => setSearchText(text)}
-            onSubmitEditing={ function() {
-                cards = searchHosps();
-            }}
+
             />
 
             <ScrollView

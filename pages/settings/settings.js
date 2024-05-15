@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TextInput, Image, Alert, Button } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TextInput, Image, Alert, Button, Switch } from 'react-native';
 import { TouchableHighlight, TouchableOpacity, ImageBackground } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -8,16 +8,20 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
 import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
-import firestore from '../services/firebase';
+import {firestore} from '../../services/firebase';
 
-import '../global';
+import '../../global';
+import { version } from '../../package.json';
 
 const Stack = createStackNavigator();
 const SettingsPage = (props) => {
     return(
         <Stack.Navigator>
             <Stack.Screen name="Settings and Accounts">
-                {() => <SettingsIndex loginCallback={props.loginCallback} adminCallback={props.adminCallback} userData={props.userData}/>}
+                {props2 => <SettingsIndex loginCallback={props.loginCallback} adminCallback={props.adminCallback} userData={props.userData} nav={props2.navigation}/>}
+            </Stack.Screen>
+            <Stack.Screen name="App Info">
+                {props2 => <ApplicationInfo isAdmin={props.isAdmin}/>}
             </Stack.Screen>
         </Stack.Navigator>
     )
@@ -25,9 +29,63 @@ const SettingsPage = (props) => {
 export default SettingsPage;
 
 const SettingsIndex = (props) => {    
+    const styles = StyleSheet.create({
+        settingSection: {
+            backgroundColor: 'gray',
+            padding: 15,
+            borderColor: '#4d4d4d', borderBottomWidth: 2,
+            flexDirection: 'row', alignItems: 'center'
+        },
+        topBorderRadius: {
+            borderTopLeftRadius: 15, borderTopRightRadius: 15
+        },
+        bottomBorderRadius: {
+            borderBottomLeftRadius: 15, borderBottomRightRadius: 15, borderBottomWidth: 0
+        },
+        settingText: {
+            color: 'white',
+            fontWeight: 'bold',
+            fontSize: 20
+        }
+    });
+
+    const SettingTab = (props) => {
+        var borderRadiusStyle = null;
+        if(props.isTop) {
+            borderRadiusStyle = styles.topBorderRadius;
+        } else if(props.isBottom) {
+            borderRadiusStyle = styles.bottomBorderRadius;
+        }
+        return(            
+            <TouchableOpacity style={[styles.settingSection, borderRadiusStyle]}
+            onPress={props.onPress}>
+                <Ionicons style={{marginRight: 10}} name={props.ionicon} size={25} color={'white'}/>
+                <Text style={styles.settingText}>{props.settingName}</Text>
+                <View style={{marginLeft: 'auto'}}>{props.inlineControl}</View>
+            </TouchableOpacity>
+        );
+    }
+
     return(
         <ScrollView style={{height: '100%'}}>
             <ProfileManager {...props} loginCallback={props.loginCallback} adminCallback={props.adminCallback} userData={props.userData}/>
+            <View style={{padding: 15, width: '100%', height: '50'}}>
+                <SettingTab 
+                inlineControl={
+                    <Switch
+                    disabled={true}
+                    />
+                }
+                ionicon='moon-outline' settingName='Dark Mode [Not yet available]' isTop nav={props.nav}/>
+                {/* <SettingTab ionicon='people-outline' settingName='About the developers' nav={props.nav}/> */}
+                <SettingTab 
+                onPress={
+                    ()=>{
+                        props.nav.navigate('App Info');
+                    }
+                }
+                ionicon='information-circle' settingName='App Info' isBottom nav={props.nav}/>
+            </View>
         </ScrollView>
     );
 }
@@ -46,8 +104,6 @@ const ProfileManager = (props) => {
             
             borderBottomColor: '#b3b3b3',
             borderBottomWidth: 2,
-
-            padding: 15,
 
             margin: 10,
             backgroundColor: '#b3b3b3',
@@ -89,7 +145,8 @@ const ProfileManager = (props) => {
             padding: 15,
             flexDirection: 'column',            
 
-            alignItems: 'center',            
+            alignItems: 'center',          
+            borderRadius: 15  
         }
     });
     
@@ -117,12 +174,12 @@ const ProfileManager = (props) => {
 
             getDocs(query(
                 collection(firestore, 'users'),
-                where('uid', '==', userInfo.user.id)
+                where('uid', '==', userInfo.user.id),                
             )).then(qSnap => {
-                qSnap.forEach(dSnap=> {
-                    if(dSnap.data().isAdmin) {
+                qSnap.forEach(dSnap => {
+                    if(dSnap.data().isAdmin === true) {
                         cb2(true);
-                        console.log("isAdmin");
+                        console.log('Logged in as admin!');
                     }
                 });
             });
@@ -167,7 +224,7 @@ const ProfileManager = (props) => {
 
     const ProfileSection_loggedIn = (props) => {
         return(
-            <ImageBackground style={[styles.profileSection2]} src={props.userData.user.photo} blurRadius={1}>
+            <ImageBackground style={styles.profileSection1} imageStyle={{borderRadius: 15}} src={props.userData.user.photo} blurRadius={1}>
                 <View style={styles.darken}>
                     <Image
                     style={
@@ -195,7 +252,7 @@ const ProfileManager = (props) => {
 
     const ProfileSection_loggedOut = (props) => {
         return(
-            <View style={[styles.profileSection1, {flexDirection:'column'}]}>
+            <View style={[styles.profileSection1, {flexDirection:'column', alignItems: 'center', padding: 15}]}>
                 <Text style={styles.loginWarn}>You are not signed in.</Text>
                 <GoogleSigninButton
                 size={GoogleSigninButton.Size.Wide}
@@ -213,3 +270,34 @@ const ProfileManager = (props) => {
         isLoggedIn ? <ProfileSection_loggedIn {...props} /> : <ProfileSection_loggedOut {...props}/>
     )
 }
+
+const ApplicationInfo = (props) => {
+    const styles = StyleSheet.create({
+        infoContainer: {
+            flexDirection: 'row',
+            padding: 15,
+            borderBottomWidth: 2,
+            borderColor: 'black'
+        },
+        infoTextTitle: {
+            fontWeight: 'bold'
+        }     
+    });
+
+    return (
+        <ScrollView style={{height: '100%'}}>
+            <View style={styles.infoContainer}>
+                <Text style={styles.infoTextTitle}>App Version: </Text>
+                <Text>StudentMed {version}</Text>
+            </View>
+            <View style={styles.infoContainer}>
+                <Text style={styles.infoTextTitle}>Working package: </Text>
+                <Text>com.doppie.studentmed</Text>
+            </View>
+            <View style={styles.infoContainer}>
+                <Text style={styles.infoTextTitle}>Logged in with admin: </Text>
+                <Text>{props.isAdmin.toString()}</Text>
+            </View>
+        </ScrollView>
+    );
+};

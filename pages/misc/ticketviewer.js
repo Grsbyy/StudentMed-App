@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, ScrollView, TextInput, Image, Alert, Button } f
 
 import { TouchableHighlight, TouchableOpacity, ImageBackground } from 'react-native';
 import { Timestamp, addDoc, collection, doc, getDoc, getDocs, getFirestore, limitToLast, onSnapshot, query, refEqual, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore';
-import firestore from '../../services/firebase';
+import {firestore} from '../../services/firebase';
 import QRCode from 'react-native-qrcode-svg';
 
 const styles_shared_1 = StyleSheet.create({

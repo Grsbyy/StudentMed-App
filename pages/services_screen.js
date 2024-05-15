@@ -6,9 +6,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import OCIMain from './services_oci/svc_ocipage';
+import LFMain from './services_lf/svc_lfpage';
 import OCIAdmin from './services_oci/svc_ociadmin';
 import MenstrualCalc from './svc_menscalc';
 import BMICalc from './svc_bmicalc';
+import FailScreen from './misc/fail_screen';
+import AWMain from './svc_articlewriter';
 
 const Stack = createStackNavigator();
 const ServicesPage = (props) => {
@@ -28,6 +31,18 @@ const ServicesPage = (props) => {
             </Stack.Screen>
             <Stack.Screen name="BMI Calculator">
                 { props2 => <BMICalc {...props2}/>}
+            </Stack.Screen>
+            <Stack.Screen options={{headerShown:false}} name="Lost and Found Items">
+                { props2 => <LFMain {...props2} userData={props.userData}/>}
+            </Stack.Screen>
+            <Stack.Screen options={{headerShown:false}} name="Lost and Found Items Admin">
+                { props2 => <LFMain {...props2} userData={props.userData} launchedAsAdmin/>}
+            </Stack.Screen>
+            <Stack.Screen name="KB Manager">
+                { props2 => <FailScreen text='This feature is not ready yet :('/>}
+            </Stack.Screen>
+            <Stack.Screen options={{headerShown:false}} name="ArtWriter">
+                { props2 => <AWMain {...props2} userData={props.userData}/>}
             </Stack.Screen>
         </Stack.Navigator>
     );
@@ -50,30 +65,30 @@ const SVCHome = (props) => {
                 <View>
                     <Text style={styles.sectionText}>Admin-Only</Text>
                     <SVCButton
-                        imgSrc='https://t3.ftcdn.net/jpg/02/26/35/20/360_F_226352071_wOWtMmihfuqF0DVSGTZede0oKas4qxvc.jpg'
+                        imgSrc='https://www.freecodecamp.org/news/content/images/2022/03/pexels-pixabay-207580.jpg'
                         ioniconIcon='construct-outline'
                         title='OCS Admin'
                         nav={props.navigation}
                         dest='OCS Admin'
                     />
                     <SVCButton
-                        imgSrc='https://t3.ftcdn.net/jpg/02/26/35/20/360_F_226352071_wOWtMmihfuqF0DVSGTZede0oKas4qxvc.jpg'
+                        imgSrc='https://www.freecodecamp.org/news/content/images/2022/03/pexels-pixabay-207580.jpg'
                         ioniconIcon='construct-outline'
                         title='LF Admin Control'
                         nav={props.navigation}
-                        dest='LF Admin'
+                        dest='Lost and Found Items Admin'
                     />
                     <SVCButton
-                        imgSrc='https://t3.ftcdn.net/jpg/02/26/35/20/360_F_226352071_wOWtMmihfuqF0DVSGTZede0oKas4qxvc.jpg'
+                        imgSrc='https://www.freecodecamp.org/news/content/images/2022/03/pexels-pixabay-207580.jpg'
                         ioniconIcon='construct-outline'
                         title='Article Writer'
                         nav={props.navigation}
-                        dest='Article Writer'
+                        dest='ArtWriter'
                     />
                     <SVCButton
-                        imgSrc='https://t3.ftcdn.net/jpg/02/26/35/20/360_F_226352071_wOWtMmihfuqF0DVSGTZede0oKas4qxvc.jpg'
+                        imgSrc='https://www.freecodecamp.org/news/content/images/2022/03/pexels-pixabay-207580.jpg'
                         ioniconIcon='construct-outline'
-                        title='KB Manager'
+                        title='KB Manager [Not available yet]'
                         nav={props.navigation}
                         dest='KB Manager'
                     />
@@ -90,7 +105,7 @@ const SVCHome = (props) => {
                     dest='Online Clinic System'
                 />
                 <SVCButton
-                    imgSrc='https://t3.ftcdn.net/jpg/02/26/35/20/360_F_226352071_wOWtMmihfuqF0DVSGTZede0oKas4qxvc.jpg'
+                    imgSrc='https://live.staticflickr.com/8215/8376268984_dc37af7c40_c.jpg'
                     ioniconIcon='storefront-outline'
                     title='Lost and Found Items'
                     nav={props.navigation}

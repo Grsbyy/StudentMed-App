@@ -4,7 +4,8 @@ import { TouchableHighlight, TouchableOpacity, ImageBackground } from 'react-nat
 import { createStackNavigator } from '@react-navigation/stack';
 
 import HospitalsView from './kb_hospitalview.js';
-import { HospitalObject } from '../classes/hospitalobject.js';
+import { HospitalObject } from '../../classes/hospitalobject.js';
+import IllnessesView from './kb_illnessview.js';
 
 const Stack = createStackNavigator();
 const KnowledgeBasePage = () => {
@@ -16,6 +17,9 @@ const KnowledgeBasePage = () => {
             <Stack.Screen options={{headerShown:false}} name="Hospitals">
                 {props => <HospitalsView/>}
             </Stack.Screen>
+            <Stack.Screen options={{headerShown:false}} name="Illnesses">
+                {props => <IllnessesView/>}
+            </Stack.Screen>
         </Stack.Navigator>
     );
 };
@@ -26,9 +30,9 @@ const KBHome = (props) => {
         <ScrollView style={{
             height: '100%'
         }}>
-            {/* <KBButton
+            <KBButton
             imgSrc='https://as2.ftcdn.net/v2/jpg/03/59/43/73/1000_F_359437390_WHAi6PVJZjUArqF4qLTlGqjHYhFghKr4.jpg'
-            title='Illnesses Catalog'/> */}
+            title='Illnesses' nav={props.navigation} dest='Illnesses'/>
 
             <KBButton
             imgSrc='https://upload.wikimedia.org/wikipedia/commons/d/d2/Zamboanga_del_Norte_Medical_Center.jpg'

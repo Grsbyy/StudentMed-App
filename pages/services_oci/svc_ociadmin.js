@@ -9,7 +9,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { Timestamp, addDoc, collection, doc, getDoc, getDocs, getFirestore, limitToLast, onSnapshot, query, refEqual, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore';
-import firestore from '../../services/firebase';
+import {firestore} from '../../services/firebase';
 import { Dropdown } from 'react-native-element-dropdown';
 import TicketViewer from '../misc/ticketviewer';
 

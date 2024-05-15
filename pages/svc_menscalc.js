@@ -302,7 +302,7 @@ const MenstrualCalc = () => {
                                 If you feel like there is a flaw with calculating your cases, we may ask you to screenshot this section if you report an issue.
                             </Text>
                             <Text style={[styles.standardText]}>
-                                mean_days_interval (first-to-first ang basehan): {meanInterval}
+                                mean_days_interval (first-to-first ang basehan): {meanInterval.toFixed(2)}
                             </Text>
                             <Text style={[styles.standardText]}>
                                 mean_days_duration: {meanDuration}

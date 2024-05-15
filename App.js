@@ -11,8 +11,8 @@ import {
 } from '@react-native-google-signin/google-signin';
 
 import AnnouncementPage from './pages/announcements';
-import KnowledgeBasePage from './pages/knowledgebase';
-import SettingsPage from './pages/settings';
+import KnowledgeBasePage from './pages/kb/knowledgebase';
+import SettingsPage from './pages/settings/settings';
 import ServicesPage from './pages/services_screen';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -77,7 +77,7 @@ const MainApp = () => {
                         () => <ServicesPage userData={loginData} isAdmin={isAdmin}/>                    
                     }/>
                     <Tab.Screen options={{headerShown:false}} name="Settings" children={
-                        ()=> <SettingsPage loginCallback={setLoginData} adminCallback={setIsAdmin} userData={loginData}/>
+                        ()=> <SettingsPage loginCallback={setLoginData} adminCallback={setIsAdmin} userData={loginData} isAdmin={isAdmin}/>
                     }/>
                 </Tab.Navigator>
             </NavigationContainer> 

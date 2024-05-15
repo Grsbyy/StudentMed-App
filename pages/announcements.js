@@ -11,8 +11,8 @@ import { loadNewsFromWeb } from '../services/loaders.js';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import { collection, getDocs } from 'firebase/firestore';
-import firestore from '../services/firebase.js';
+import { collection, getDocs, onSnapshot } from 'firebase/firestore';
+import {firestore} from '../services/firebase.js';
 
 let newsObjects = {};
 
@@ -40,14 +40,14 @@ const AnnouncementPage = () => {
 
     const fetchNews = async () => {
         try {
-            await getDocs(collection(firestore, "news"))
-            .then((qSnap) => {
-                const data = qSnap.docs.map((doc) => ({
-                    ...doc.data(), id: doc.id
-                }));
-                setNewsData(data);
-                setNewsLoaded(true);                        
-            });
+            onSnapshot(collection(firestore, "news"),
+                (qSnap) => {
+                    const data = qSnap.docs.map((doc) => ({
+                        ...doc.data(), id: doc.id
+                    }));
+                    setNewsData(data);
+                    setNewsLoaded(true);
+                });
         } catch (err) {
             setNewsFetchFail(true);
             console.log(err);
@@ -80,70 +80,6 @@ const AnnouncementPage = () => {
             <LoadingScreen text={"Loading news..."}/>
         );
     }
-
-    // if(isNewsFetchFail) {
-    //     return(
-    //         <View style={{justifyContent: 'center', alignItems: 'center', height: '100%'}}>
-    //             <Ionicons name='cloud-offline' size={100} color='gray'/>
-    //             <Text style={{
-    //                 textAlign: 'center',
-    //                 fontWeight: 'bold',
-    //                 fontSize: 15
-    //             }}>
-    //                 We couldn't fetch your newsfeed, sorry about that!
-    //             </Text>
-                
-    //             <Button
-    //             title="Retry"
-    //             onPress={
-    //                 function() {
-    //                     tryAgain();
-    //                 }
-    //             }
-    //             />
-    //         </View>
-    //     );
-    // } else if(isNewsReady && !isNewsFetchFail) {
-    //     if(newsObjects.length == 0) {
-    //         return(
-    //             <View style={{justifyContent: 'center', alignItems: 'center', height: '100%'}}>
-    //                 <Ionicons name='partly-sunny' size={100} color='gray'/>
-    //                 <Text style={{
-    //                     textAlign: 'center',
-    //                     fontWeight: 'bold',
-    //                     fontSize: 15
-    //                 }}>
-    //                     There seems to be no published news online...
-    //                 </Text>
-    //             </View>
-    //         );
-            
-    //     } else {
-    //         return(        
-    //             <Stack.Navigator>
-    //                 <Stack.Screen name="Announcements and News">
-    //                     {props => <CardsDisplay {...props} setArticleFunc={setSelectedArticle} articles={newsData}/>}
-    //                 </Stack.Screen>
-    //                 <Stack.Screen name="Reading">
-    //                     {props => <ArticleViewSubpage article={newsData[selectedArticle]}/>}
-    //                 </Stack.Screen>
-    //             </Stack.Navigator>                  
-    //         );
-    //     }        
-    // } else {
-    //     return(
-    //         <View style={{justifyContent: 'center', alignItems: 'center', height: '100%'}}>
-    //             <Ionicons name='hourglass-outline' size={100} color='gray'/>
-    //             <Text style={{
-    //                 textAlign: 'center',
-    //                 fontWeight: 'bold',
-    //                 fontSize: 15
-    //             }}>
-    //                 Loading News...
-    //             </Text>
-    //         </View>
-    //     );
-    // }
 };
 export default AnnouncementPage;
 
@@ -298,7 +234,7 @@ const ArticleViewSubpage = (props) => {
             <Text style={style.metaData}>Published on {props.article.date.toDate().toDateString()}</Text>
             <Text style={style.metaData}>Uploaded by {props.article.author}</Text>
             
-            <Text style={style.body}>{props.article.article}</Text>
+            <Text style={style.body}>{props.article.content}</Text>
 
             <Text style={{marginTop: 25, fontWeight: 'bold'}}>Attached Images:</Text>
             <View>
