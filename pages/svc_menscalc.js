@@ -136,8 +136,8 @@ const MenstrualCalc = () => {
     const durationArr = [];
     var nextStart;
     var nextEnd;
-    var meanInterval;
-    var meanDuration;
+    var meanInterval = 0;
+    var meanDuration = 0;
     if(dataValid) {
         for(var i = 0; i < sortedDates.length - 1; i++) {
             intervalArr.push((sortedDates[i+1].day1 / 86400000) - (sortedDates[i].day2 / 86400000));
