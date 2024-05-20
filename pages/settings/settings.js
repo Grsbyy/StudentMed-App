@@ -288,7 +288,7 @@ const ApplicationInfo = (props) => {
         <ScrollView style={{height: '100%'}}>
             <View style={styles.infoContainer}>
                 <Text style={styles.infoTextTitle}>App Version: </Text>
-                <Text>StudentMed 0.2.1</Text>
+                <Text>StudentMed 0.2.2</Text>
             </View>
             <View style={styles.infoContainer}>
                 <Text style={styles.infoTextTitle}>Working package: </Text>
